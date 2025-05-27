@@ -1,0 +1,24 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+*.vcxproj
+*.vcxproj.user
+*.sln.docstates
+*.suo
+*.sdf
+*.opensdf
+Debug/
+Release/
+.vs/
+ipch/
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln.docstates
+*.suo
+*.sdf
+*.opensdf
+Debug/
+Release/
+.vs/
+ipch/
+
