@@ -56,6 +56,7 @@ int matrix[N_MAX][M_MAX]; //main matrix
 int deltaCoords[3][2] = { {-1,-1}, {-1,0}, {-1, 1} };
 int maximumCoins = 0;
 int matrixWithoutBombs[N_MAX][M_MAX]; // copy matrix
+bool visitedMatrix[N_MAX][M_MAX];
 
 struct AirPlane
 {
@@ -90,7 +91,7 @@ void clearMap()
 void dropBomb(int dropBombInRow)
 {
 	int top = dropBombInRow;
-	int end = dropBombInRow - 5;
+	int end = dropBombInRow - 4;
 
 	if (end <=0 )
 	{
@@ -101,7 +102,7 @@ void dropBomb(int dropBombInRow)
 	{
 		for (int col = 0; col < M; ++col)
 		{
-			if ((row <= top && row > end) && (matrix[row][col] == 2))
+			if ((row <= top && row >= end) && (matrix[row][col] == 2))
 			{
 				matrixWithoutBombs[row][col] = 0; // disable bombs
 			}
@@ -111,13 +112,14 @@ void dropBomb(int dropBombInRow)
 			}
 		}
 	}
+
+	int breaks = 0;
 }
 
 void DFSAirPlaneGame(AirPlane &state)
 {
 	if (matrixWithoutBombs[state.row][state.col] == 1)
 	{
-		matrixWithoutBombs[state.row][state.col] = 0;
 		state.coins = state.coins + 1;
 	}
 	else if (matrixWithoutBombs[state.row][state.col] == 2)
@@ -142,7 +144,22 @@ void DFSAirPlaneGame(AirPlane &state)
 
 			if (isSafe(newRow, newCol))
 			{
-				// matrixWithoutBombs[newRow][newCol] = 0;
+				/*if (matrixWithoutBombs[newRow][newCol] == 1)
+				{
+					state.coins = state.coins + 1;
+				}
+				else if (matrixWithoutBombs[newRow][newCol] == 2)
+				{
+					state.coins = state.coins - 1;
+				}*/
+
+				/*if (visitedMatrix[newRow][newCol] == false)
+				{
+					visitedMatrix[newRow][newCol] = true;
+					AirPlane newState(newRow, newCol, state.coins);
+					DFSAirPlaneGame(newState);
+					visitedMatrix[newRow][newCol] = false;
+				}*/
 				AirPlane newState(newRow, newCol, state.coins);
 				DFSAirPlaneGame(newState);
 			}
@@ -152,10 +169,21 @@ void DFSAirPlaneGame(AirPlane &state)
 
 void mainAirPlaneGame(int row, int col, int rowToDropTheBomb)
 {
-	AirPlane firstState(row, col, 0);
+	//AirPlane firstState(row, col, 0);
 	dropBomb(rowToDropTheBomb);
-	// clearMap();
+	/*int startCoinValue = 0;
+	if (matrixWithoutBombs[row][col] == 1)
+	{
+		startCoinValue += 1;
+	}
+	else if (matrixWithoutBombs[row][col] == 2)
+	{
+		startCoinValue -= 1;
+	}*/
+
+	AirPlane firstState(row, col, 0);
 	DFSAirPlaneGame(firstState);
+	int breaks = 0;
 }
 
 int main()
@@ -176,10 +204,10 @@ int main()
 			}
 		}
 
-		for (int dropBomb = N - 1; dropBomb >= 0; dropBomb--) //Row to drop the bomb
+		for (int dropRowBomb = N - 1; dropRowBomb >= 0; dropRowBomb--) //Row to drop the bomb
 		{
 			clearMap();
-			mainAirPlaneGame(N, M, dropBomb);
+			mainAirPlaneGame(N-1, 2, dropRowBomb);
 		}
 		cout << "#" << test_cases << " " << maximumCoins << '\n';
 		maximumCoins = 0;
