@@ -1,0 +1,23 @@
+3
+6
+A B C C E D
+3 4
+A B C E
+S F C S 
+A D E E
+3
+S E E
+3 4
+A B C E 
+S F C S
+A D E E
+4
+A B C B
+3 4
+A B C E 
+S F C S 
+A D E E
+
+#1 true
+#2 true
+#3 false
