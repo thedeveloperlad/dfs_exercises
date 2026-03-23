@@ -51,8 +51,11 @@ using namespace std;
 int M = 0; // row
 int N = 0; // col
 int matrix[N_MAX][M_MAX]; //main matrix
+int matrixNumbers[N_MAX][M_MAX]; //main matrix
 int deltaCoords[4][2] = { {-1,0},{0,1},{1,0},{0,-1} };
 bool visitedMatrix[N_MAX][M_MAX];
+int testAddArray[N_MAX];
+int testAddCounter = 0;
 int gPerimeter = 0;
 
 struct IslandPerimeter
@@ -87,7 +90,28 @@ int checkPerimeter(int row, int col)
 			counter++;
 		}
 	}
+
+	testAddArray[testAddCounter] = counter;
+	testAddCounter++;
 	return counter; // return value
+}
+
+int perimeter(int row, int col)
+{
+	int totalPerimeter = 0;
+
+	for (int row = 0; row < M; ++row)
+	{
+		for (int col = 0; col < N; ++col)
+		{
+			if (matrix[row][col] == 1)
+			{
+				totalPerimeter += checkPerimeter(row, col);
+			}
+		}
+	}
+
+	return totalPerimeter;
 }
 
 void clearVars()
@@ -104,6 +128,9 @@ void clearVars()
 
 void dfsIslandPerimeter(IslandPerimeter &state)
 {
+	//gPerimeter = state.counter;
+	//matrixNumbers[state.row][state.col] = checkPerimeter(state.row, state.col);
+	//gPerimeter = gPerimeter + matrixNumbers[state.row][state.col];
 	for (int delta = 0; delta < 4; ++delta)
 	{
 		int newRow = state.row + deltaCoords[delta][0];
@@ -111,12 +138,21 @@ void dfsIslandPerimeter(IslandPerimeter &state)
 
 		if (isSafe(newRow, newCol))
 		{
-			if (visitedMatrix[newRow][newCol] == false)
+			if (matrix[newRow][newCol] == 1)
 			{
-				visitedMatrix[newRow][newCol] = true;
-				gPerimeter = checkPerimeter(newRow, newCol);
-				IslandPerimeter newState(newRow, newCol, state.counter + gPerimeter);
-				visitedMatrix[newRow][newCol] = false;
+				if (visitedMatrix[newRow][newCol] == false)
+				{
+					visitedMatrix[newRow][newCol] = true;
+					//state.counter += checkPerimeter(newRow, newCol);
+					//matrix[newRow][newCol] = checkPerimeter(newRow, newCol);
+					//gPerimeter += checkPerimeter(newRow, newCol);
+					//matrix[newRow][newCol] = 0;
+					matrixNumbers[state.row][state.col] = checkPerimeter(state.row, state.col);
+					gPerimeter = gPerimeter + matrixNumbers[state.row][state.col];
+					IslandPerimeter newState(newRow, newCol, state.counter);
+					dfsIslandPerimeter(newState);
+					visitedMatrix[newRow][newCol] = false;
+				}
 			}
 		}
 	}
@@ -124,15 +160,37 @@ void dfsIslandPerimeter(IslandPerimeter &state)
 
 void mainIslandPerimeter(int row, int col)
 {
-	if (N == 1 && M == 1)
+	//gPerimeter = checkPerimeter(row, col);
+	//gPerimeter = perimeter(row, col);
+	IslandPerimeter firstState(row, col, 0);
+	dfsIslandPerimeter(firstState);
+	/*if (N == 1 && M == 1)
 	{
 		gPerimeter = checkPerimeter(row, col);
 	} 
 	else
 	{
-		IslandPerimeter firstState(row, col, 0);
+		//gPerimeter = checkPerimeter(row, col);
+		IslandPerimeter firstState(row, col, gPerimeter);
 		dfsIslandPerimeter(firstState);
-	}
+	}*/
+	/*for (int row = 0; row < M; ++row)
+	{
+		for (int col = 0; col < N; ++col)
+		{
+			if (matrix[row][col] == 1)
+			{
+				//mainIslandPerimeter(row, col);
+				//break;
+				int number = checkPerimeter(row, col);
+				gPerimeter += number;
+				matrixNumbers[row][col] = number;
+				//gPerimeter += checkPerimeter(row, col);
+			}
+		}
+	}*/
+
+	int breaks = 0;
 }
 
 int main()
@@ -168,6 +226,7 @@ int main()
 			}
 		}
 
+		//mainIslandPerimeter(0, 1);
 		cout << "#" << test_cases << " " << gPerimeter << '\n';
 		//minPath = INT_MAX;
 		gPerimeter = 0;
