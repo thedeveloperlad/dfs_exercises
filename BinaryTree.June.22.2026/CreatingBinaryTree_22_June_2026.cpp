@@ -24,6 +24,25 @@ int getSize(Node* root) {
 	}
 }
 
+Node* insertNodeBST(Node* root, int data)
+{
+	if (root == nullptr)
+	{
+		return new Node(data);
+	}
+	else
+	{
+		if (data < root->data)
+		{
+			root->left = insertNodeBST(root->left, data);
+		}
+		else {
+			root->right = insertNodeBST(root->right, data);
+		}
+	}
+	return root;
+}
+
 // Recursive insertion for a Binary Search Tree.
 void insertBST(Node* root, int data)
 {
@@ -119,7 +138,7 @@ void testRoot()
 	thirdNode->left = fiveNode;
 
 
-	cout << "Tree Size: " << getSize(firstNode) << '\n';
+	// cout << "Tree Size: " << getSize(firstNode) << '\n';
 }
 
 int main() {
@@ -127,13 +146,20 @@ int main() {
 	Node* root = nullptr;
 
 	//Using the BST approach
-	insertBST(root, 2);
+	/*insertBST(root, 2);
 	insertBST(root, 3);
 	insertBST(root, 4);
 	insertBST(root, 5);
-	insertBST(root, 6);
+	insertBST(root, 6);*/
 
-	cout << "BST In-Order tranversal: ";
+	//Using the BST approach returning root
+	root = insertNodeBST(root, 2);
+	root = insertNodeBST(root, 3);
+	root = insertNodeBST(root, 4);
+	root = insertNodeBST(root, 5);
+	root = insertNodeBST(root, 6);
+
+	cout << "BST In-Order tranversal: \n";
 	printInOrder(root);
 
     return 0;
