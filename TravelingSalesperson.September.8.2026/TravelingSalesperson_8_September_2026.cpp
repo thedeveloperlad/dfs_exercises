@@ -59,10 +59,12 @@ int costMatrix[N_MAX][N_MAX];
 int N = 0;
 
 int minCostPath = INT_MAX;
-int deltaCoords[4][2] = { {-1, 0}, {0, 1}, {1,0}, {0,-1} };
+// int deltaCoords[4][2] = { {-1, 0}, {0, 1}, {1,0}, {0,-1} };
+int deltaCoords[3][2] = { {-1, -1}, {-1, 0}, {-1,1} };
+bool visitedOffices[N_MAX];
 
 /*
-00 01 01 {-1, 0}, {0, 1}, {1,0}, {0,-1}
+00 01 02 {-1, -1}, {-1, 0}, {-1,1}
 10 11 12
 20 21 22
 */
@@ -72,11 +74,14 @@ struct TravelingSalesperson
 	int row;
 	int col;
 	int counter;
+	int officeCounter;
 
-	TravelingSalesperson(int r, int c, int cnt) :
+	TravelingSalesperson(int r, int c, int cnt, int ofc) :
 		row(r),
 		col(c),
-		counter(cnt) {
+		counter(cnt),
+		officeCounter(ofc)
+	{
 	}
 };
 
@@ -89,22 +94,29 @@ bool isSafe(int row, int col)
 
 void dfsTravelingSalesperson(TravelingSalesperson &state)
 {
-	/*if (state.counter + matrix[state.row][state.col] < minCostPath)
+	if (state.col == 0 && (state.officeCounter == (N-1)))
 	{
-		minCostPath = state.counter;
-	}*/
-	
-	for (int delta = 0; delta < 4; ++delta)
-	{
-		int newRow = deltaCoords[delta][0] + state.row;
-		int newCol = deltaCoords[delta][1] + state.col;
-
-		if (isSafe(newRow, newCol))
+		if (state.counter < minCostPath)
 		{
-			if (state.counter + matrix[newRow][newCol] < minCostPath)
+			minCostPath = state.counter;
+		}
+	}
+	else
+	{
+		int newRow = state.col; //new office
+		for (int increment = 0; increment < N; increment++)
+		{
+			if (increment != state.row)
 			{
-				costMatrix[newRow][newCol] = state.counter + matrix[newRow][newCol];
-				TravelingSalesperson newState(newRow, newCol, state.counter + matrix[newRow][newCol]);
+				int newCol = increment; //place 
+
+				if (isSafe(newRow, newCol) && visitedOffices[newRow] == false && matrix[newRow][newCol] != 0)
+				{
+					visitedOffices[newRow] = true;
+					TravelingSalesperson newState(newRow, newCol, state.counter + matrix[newRow][newCol], state.officeCounter + 1);
+					dfsTravelingSalesperson(newState);
+					visitedOffices[newRow] = false;
+				}
 			}
 		}
 	}
@@ -112,7 +124,11 @@ void dfsTravelingSalesperson(TravelingSalesperson &state)
 
 void mainTravelingSalesperson(int row, int col)
 {
-	TravelingSalesperson firstState(row, col, 0);
+	// GET THE FIRST VALUE, MARK AS VISITIED AND JUMP TO LASTEST ROW TO COMEBACK TO ROW 0 (Office no. 1)
+	int firstOfficeValue = matrix[row][col];
+	visitedOffices[0] = true;
+
+	TravelingSalesperson firstState(row, col, firstOfficeValue, 0);
 	dfsTravelingSalesperson(firstState);
 }
 
@@ -133,12 +149,18 @@ int main()
 			}
 		}
 
-		int breaks = 0;
+		for (int col = 0; col < N; ++col)
+		{
+			if (matrix[0][col] != 0) // starting point is ROW = 0, COL = N-1 (value)
+			{
+				mainTravelingSalesperson(0, col);
+				// officeCounter = 0;
+			}
+		}
 
-		mainTravelingSalesperson(0, 0);
 		cout << "#" << test_cases << " " << minCostPath << '\n';
 		minCostPath = INT_MAX;
-		
+		// officeCounter = 0;
 	}
 
 	return 0;
