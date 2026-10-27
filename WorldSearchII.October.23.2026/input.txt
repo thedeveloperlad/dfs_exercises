@@ -1,0 +1,30 @@
+2
+4
+4
+o a t h
+3
+p e a
+3
+e a t
+4
+r a i n
+4 4
+o a a n
+e t a e
+i h k r
+i f l v
+2 2
+a b
+c d
+1
+4
+a b c b
+
+#1 2 - eat oath
+#2 0 -
+
+TC1 words = oath pea eat rain
+Output: eat oath
+
+TC2 words = abcb
+Output: []
