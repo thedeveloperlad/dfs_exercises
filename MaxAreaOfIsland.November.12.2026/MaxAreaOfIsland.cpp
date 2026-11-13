@@ -24,7 +24,8 @@ using namespace std;
 #define ISLAND 1
 int N = 0; // row
 int M = 5; // col
-int maximumArea = 0;
+int islandCounter = 0;
+int maximumAreaFinal = 0;
 int matrix[N_MAX][M_MAX]; //main matrix
 int deltaCoords[4][2] = { {-1,0}, {0,-1}, {1,0}, {0,1} };
 
@@ -50,26 +51,19 @@ bool isSafe(int row, int col)
 
 void maxAreaofIslandDFS(Island& state)
 {
-	if (state.counter > maximumArea)
+	for (int delta = 0; delta < 4; ++delta)
 	{
-		maximumArea = state.counter;
-	}
-	else
-	{
-		for (int delta = 0; delta < 4; ++delta)
-		{
-			int newRow = state.row + deltaCoords[delta][0];
-			int newCol = state.col + deltaCoords[delta][1];
+		int newRow = state.row + deltaCoords[delta][0];
+		int newCol = state.col + deltaCoords[delta][1];
 
-			if (isSafe(newRow, newCol))
+		if (isSafe(newRow, newCol))
+		{
+			if (matrix[newRow][newCol] == ISLAND) // Island found
 			{
-				int actualValue = matrix[state.row][state.col];
-				if (matrix[newRow][newCol] == ISLAND) // Island found
-				{
-					matrix[state.row][state.col] = 0;
-					Island newState(newRow, newCol, state.counter + 1);
-					maxAreaofIslandDFS(newState);
-				}
+				matrix[state.row][state.col] = 0;
+				islandCounter++;
+				Island newState(newRow, newCol, state.counter + 1);
+				maxAreaofIslandDFS(newState);
 			}
 		}
 	}
@@ -79,6 +73,11 @@ void mainMaxAreaofIsland(int row, int col)
 {
 	Island firstState(row, col, 1);
 	maxAreaofIslandDFS(firstState);
+
+	if (islandCounter > maximumAreaFinal)
+	{
+		maximumAreaFinal = islandCounter;
+	}
 }
 
 int main()
@@ -105,14 +104,16 @@ int main()
 			{
 				if (matrix[row][col] == ISLAND)
 				{
+					islandCounter = 1;
 					mainMaxAreaofIsland(row, col);
 				}
 			}
 		}
 
 		// print results
-		cout << "#" << test_cases << " " << maximumArea << "\n";
-		maximumArea = 0;
+		cout << "#" << test_cases << " " << maximumAreaFinal << "\n";
+		maximumAreaFinal = 0;
+		islandCounter = 0;
 	}
 
 	return 0;
